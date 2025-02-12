@@ -1,7 +1,9 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { AuthenticateWithRedirectCallback } from "@clerk/nextjs";
 
-export default clerkMiddleware();
+export default AuthenticateWithRedirectCallback({
+  publicRoutes: ['/', '/sign-in(.*)', '/sign-up(.*)'],
+});
 
 export const config = {
-  matcher: ["/((?!.+.[w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };

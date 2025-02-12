@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clerkId        String         @unique
+  email          String         @unique
+  journalEntries JournalEntry[]
+}
+
+model JournalEntry {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id])
+
+  content String @db.Char(length: 4875)
+
+  analysis Analysis?
+
+  @@index([userId])
+}
+
+model Analysis {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  journalEntryId String @db.Uuid
+  journalEntry   JournalEntry @relation(fields: [journalEntryId], references: [id])
+
+  mood     String
+  summary  String  @db.Char(length: 4875)
+  color    String
+  negative Boolean
+
+  @@unique([journalEntryId])
+}
